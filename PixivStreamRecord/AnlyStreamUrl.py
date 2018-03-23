@@ -50,6 +50,7 @@ if __name__ == "__main__":
     print('URL = %s , live_id = %s'%(highResUrl,live_id))
     logFileName = 'PixivStream-%s-%s-%s.log' %(userid,dateTime,live_id)
     steramFileName = 'PixivStream-%s-%s-%s.mkv' %(userid,dateTime,live_id)
+    steramFileName_mp4 = 'PixivStream-%s-%s-%s.mp4' %(userid,dateTime,live_id)
     print('logFileName = %s , steramFileName = %s'%(logFileName,steramFileName))
     processInfo = os.popen('ps -ef |grep %s |grep -v grep'%live_id).readlines()
     processNum = len(processInfo)
@@ -70,13 +71,8 @@ if __name__ == "__main__":
                 for pid in processPids:
                     print('pid = %s , Stream record is dead' %pid)
                     os.kill(int(pid),signal.SIGKILL)
+                # mkv to mp4 to fix time scroll
+                os.system('/usr/bin/ffmpeg -i /Raspi/%s -c copy /Raspi/%s'%(steramFileName,steramFileName_mp4))
                 sys.exit(0)
     else:
         print('Stream is Recording')
-    # print(getHighResUrl('snwtjp'))
-    # url = sys.argv[1]
-    # x = getHighResUrl(url)
-    # if x:
-    #     print(x)
-    # else:
-    #     print('0')
