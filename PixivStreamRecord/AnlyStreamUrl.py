@@ -41,22 +41,19 @@ def getHighResUrl(id):
 
 if __name__ == "__main__":
     userid = sys.argv[1]
-    # userid = 'snwtjp'
     dateTime = time.strftime('%y%m%d%H%M',time.localtime(time.time()))
     highResUrl, live_id = getHighResUrl(userid)
     if not live_id:
         print('Live is not start')
         sys.exit(1)
     print('URL = %s , live_id = %s'%(highResUrl,live_id))
-    logFileName = 'PixivStream-%s-%s-%s.log' %(userid,dateTime,live_id)
-    steramFileName = 'PixivStream-%s-%s-%s.mkv' %(userid,dateTime,live_id)
-    steramFileName_mp4 = 'PixivStream-%s-%s-%s.mp4' %(userid,dateTime,live_id)
-    print('logFileName = %s , steramFileName = %s'%(logFileName,steramFileName))
+    fileName = 'PixivStream-%s-%s-%s' %(userid,dateTime,live_id)
+    print('logFileName = %s.log , steramFileName = %s.mkv'%(fileName,fileName))
     processInfo = os.popen('ps -ef |grep %s |grep -v grep'%live_id).readlines()
     processNum = len(processInfo)
     print('processNum = %s'%processNum)
     if processNum==0:
-        os.system('nohup /usr/bin/ffmpeg -i %s -c copy /Raspi/%s >/Raspi/%s 2>&1 &'%(highResUrl,steramFileName,logFileName))
+        os.system('nohup /usr/bin/ffmpeg -i %s -c copy /Raspi/%s.mkv >/Raspi/%s.log 2>&1 &'%(highResUrl,fileName,fileName))
         print('Stream start Recording')
         while(1):
             time.sleep(300)
@@ -72,7 +69,7 @@ if __name__ == "__main__":
                     print('pid = %s , Stream record is dead' %pid)
                     os.kill(int(pid),signal.SIGKILL)
                 # mkv to mp4 to fix time scroll
-                os.system('/usr/bin/ffmpeg -i /Raspi/%s -c copy /Raspi/%s'%(steramFileName,steramFileName_mp4))
+                os.system('/usr/bin/ffmpeg -i /Raspi/%s.mkv -c copy /Raspi/%s.mp4'%(fileName,fileName))
                 sys.exit(0)
     else:
         print('Stream is Recording')
